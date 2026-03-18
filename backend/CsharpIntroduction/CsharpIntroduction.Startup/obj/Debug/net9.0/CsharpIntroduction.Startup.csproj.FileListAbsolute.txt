@@ -1,0 +1,14 @@
+C:\Users\viamatica\source\repos\CsharpIntroduction\CsharpIntroduction.Startup\bin\Debug\net9.0\CsharpIntroduction.Startup.exe
+C:\Users\viamatica\source\repos\CsharpIntroduction\CsharpIntroduction.Startup\bin\Debug\net9.0\CsharpIntroduction.Startup.deps.json
+C:\Users\viamatica\source\repos\CsharpIntroduction\CsharpIntroduction.Startup\bin\Debug\net9.0\CsharpIntroduction.Startup.runtimeconfig.json
+C:\Users\viamatica\source\repos\CsharpIntroduction\CsharpIntroduction.Startup\bin\Debug\net9.0\CsharpIntroduction.Startup.dll
+C:\Users\viamatica\source\repos\CsharpIntroduction\CsharpIntroduction.Startup\bin\Debug\net9.0\CsharpIntroduction.Startup.pdb
+C:\Users\viamatica\source\repos\CsharpIntroduction\CsharpIntroduction.Startup\obj\Debug\net9.0\CsharpIntroduction.Startup.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\viamatica\source\repos\CsharpIntroduction\CsharpIntroduction.Startup\obj\Debug\net9.0\CsharpIntroduction.Startup.AssemblyInfoInputs.cache
+C:\Users\viamatica\source\repos\CsharpIntroduction\CsharpIntroduction.Startup\obj\Debug\net9.0\CsharpIntroduction.Startup.AssemblyInfo.cs
+C:\Users\viamatica\source\repos\CsharpIntroduction\CsharpIntroduction.Startup\obj\Debug\net9.0\CsharpIntroduction.Startup.csproj.CoreCompileInputs.cache
+C:\Users\viamatica\source\repos\CsharpIntroduction\CsharpIntroduction.Startup\obj\Debug\net9.0\CsharpIntroduction.Startup.dll
+C:\Users\viamatica\source\repos\CsharpIntroduction\CsharpIntroduction.Startup\obj\Debug\net9.0\refint\CsharpIntroduction.Startup.dll
+C:\Users\viamatica\source\repos\CsharpIntroduction\CsharpIntroduction.Startup\obj\Debug\net9.0\CsharpIntroduction.Startup.pdb
+C:\Users\viamatica\source\repos\CsharpIntroduction\CsharpIntroduction.Startup\obj\Debug\net9.0\CsharpIntroduction.Startup.genruntimeconfig.cache
+C:\Users\viamatica\source\repos\CsharpIntroduction\CsharpIntroduction.Startup\obj\Debug\net9.0\ref\CsharpIntroduction.Startup.dll

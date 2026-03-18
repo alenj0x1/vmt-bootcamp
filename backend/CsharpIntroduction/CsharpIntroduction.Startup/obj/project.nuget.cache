@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "sNWmHtafcbw=",
+  "success": true,
+  "projectFilePath": "C:\\Users\\viamatica\\source\\repos\\CsharpIntroduction\\CsharpIntroduction.Startup\\CsharpIntroduction.Startup.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\viamatica\\.nuget\\packages\\microsoft.visualstudio.azure.containers.tools.targets\\1.23.0\\microsoft.visualstudio.azure.containers.tools.targets.1.23.0.nupkg.sha512"
+  ],
+  "logs": []
+}
