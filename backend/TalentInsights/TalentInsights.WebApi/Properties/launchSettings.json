@@ -3,7 +3,8 @@
     "http": {
       "commandName": "Project",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+		"ASPNETCORE_ENVIRONMENT": "Development",
+		"DATABASE_CONNECTION": ""
       },
       "dotnetRunMessages": true,
       "applicationUrl": "http://localhost:5063"
