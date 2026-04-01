@@ -21,6 +21,8 @@ public partial class Collaborator
 
     public DateTime UpdatedAt { get; set; }
 
+    public DateTime? DeletedAt { get; set; }
+
     public virtual ICollection<CollaboratorHistory> CollaboratorHistories { get; set; } = new List<CollaboratorHistory>();
 
     public virtual ICollection<CollaboratorPermission> CollaboratorPermissionAssignedByNavigations { get; set; } = new List<CollaboratorPermission>();
