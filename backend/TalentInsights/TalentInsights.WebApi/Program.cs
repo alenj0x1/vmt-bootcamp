@@ -1,7 +1,10 @@
+using Serilog;
 using TalentInsights.WebApi.Extensions;
 using TalentInsights.WebApi.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Host.UseSerilog();
 builder.Services.AddCore(builder.Configuration);
 
 var app = builder.Build();

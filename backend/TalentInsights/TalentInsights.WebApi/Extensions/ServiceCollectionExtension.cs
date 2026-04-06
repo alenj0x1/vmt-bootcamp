@@ -1,8 +1,12 @@
+using Microsoft.AspNetCore.Mvc;
+using Serilog;
+using TalentInsights.Application.Helpers;
 using TalentInsights.Application.Interfaces.Services;
 using TalentInsights.Application.Services;
 using TalentInsights.Domain.Database.SqlServer.Context;
 using TalentInsights.Domain.Interfaces.Repositories;
 using TalentInsights.Infrastructure.Persistence.SqlServer.Repositories;
+using TalentInsights.Shared.Constants;
 using TalentInsights.WebApi.Middlewares;
 
 namespace TalentInsights.WebApi.Extensions
@@ -34,7 +38,19 @@ namespace TalentInsights.WebApi.Extensions
 		/// <param name="services"></param>
 		public static void AddCore(this IServiceCollection services, IConfiguration configuration)
 		{
-			services.AddControllers();
+			services.AddControllers().ConfigureApiBehaviorOptions(options =>
+			{
+				options.InvalidModelStateResponseFactory = (errorContext) =>
+				{
+					var errors = errorContext.ModelState.Values.SelectMany(value => value.Errors.Select(error => error.ErrorMessage).ToList()).ToList();
+					var response = ResponseHelper.Create(
+						data: ValidationConstants.VALIDATION_MESSAGE,
+						errors: errors,
+						message: ValidationConstants.VALIDATION_MESSAGE
+						);
+					return new BadRequestObjectResult(response);
+				};
+			});
 			// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 			services.AddOpenApi();
 
@@ -44,6 +60,8 @@ namespace TalentInsights.WebApi.Extensions
 			services.AddServices();
 
 			services.AddMiddlewares();
+
+			AddLogging(services);
 		}
 
 		/// <summary>
@@ -53,6 +71,18 @@ namespace TalentInsights.WebApi.Extensions
 		public static void AddMiddlewares(this IServiceCollection services)
 		{
 			services.AddScoped<ErrorHandlerMiddleware>();
+		}
+
+		public static void AddLogging(this IServiceCollection services)
+		{
+			services.AddSerilog();
+
+			Log.Logger = new LoggerConfiguration()
+				// File
+				.WriteTo.File(Path.Combine(Directory.GetCurrentDirectory(), "logs", "log.txt"), rollingInterval: RollingInterval.Day)
+				// Console
+				.WriteTo.Console()
+				.CreateLogger();
 		}
 	}
 }
