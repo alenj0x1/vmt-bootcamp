@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
 using Serilog;
 using TalentInsights.Application.Helpers;
@@ -36,7 +37,7 @@ namespace TalentInsights.WebApi.Extensions
 		/// Método que añade lo esencial que necesita nuestra aplicación para funcionar
 		/// </summary>
 		/// <param name="services"></param>
-		public static void AddCore(this IServiceCollection services, IConfiguration configuration)
+		public async static Task AddCore(this IServiceCollection services, IConfiguration configuration)
 		{
 			services.AddControllers().ConfigureApiBehaviorOptions(options =>
 			{
@@ -54,7 +55,10 @@ namespace TalentInsights.WebApi.Extensions
 			// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 			services.AddOpenApi();
 
-			services.AddSqlServer<TalentInsightsContext>(configuration.GetConnectionString("Database"));
+			var databaseConnectionString = Environment.GetEnvironmentVariable(ConfigurationConstants.CONNECTION_STRING_DATABASE)
+					?? configuration[ConfigurationConstants.CONNECTION_STRING_DATABASE];
+
+			services.AddSqlServer<TalentInsightsContext>(databaseConnectionString);
 			services.AddRepositories();
 
 			services.AddServices();
@@ -62,6 +66,8 @@ namespace TalentInsights.WebApi.Extensions
 			services.AddMiddlewares();
 
 			AddLogging(services);
+
+			await Initialize(services);
 		}
 
 		/// <summary>
@@ -73,6 +79,10 @@ namespace TalentInsights.WebApi.Extensions
 			services.AddScoped<ErrorHandlerMiddleware>();
 		}
 
+		/// <summary>
+		/// Método para añadir todo lo relacionado al logging
+		/// </summary>
+		/// <param name="services"></param>
 		public static void AddLogging(this IServiceCollection services)
 		{
 			services.AddSerilog();
@@ -83,6 +93,47 @@ namespace TalentInsights.WebApi.Extensions
 				// Console
 				.WriteTo.Console()
 				.CreateLogger();
+		}
+
+		public async static Task Initialize(this IServiceCollection services)
+		{
+			var provider = services.BuildServiceProvider();
+			var scope = provider.CreateAsyncScope();
+
+			var collaboratorService = scope.ServiceProvider.GetRequiredService<ICollaboratorService>();
+			await collaboratorService.CreateFirstUser();
+		}
+
+		public static void AddAuth(IServiceCollection services, IConfiguration configuration)
+		{
+			services.AddAuthentication(builder =>
+			{
+				builder.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+				builder.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+			}).AddJwtBearer(builder =>
+			{
+				var issuer = Environment.GetEnvironmentVariable(ConfigurationConstants.JWT_ISSUER)
+					?? configuration[ConfigurationConstants.JWT_ISSUER]
+					?? throw new Exception(ResponseConstants.ConfigurationPropertyNotFound(ConfigurationConstants.JWT_ISSUER));
+
+				var audience = Environment.GetEnvironmentVariable(ConfigurationConstants.JWT_AUDIENCE)
+					?? configuration[ConfigurationConstants.JWT_AUDIENCE]
+					?? throw new Exception(ResponseConstants.ConfigurationPropertyNotFound(ConfigurationConstants.JWT_AUDIENCE));
+
+				var privateKey = Environment.GetEnvironmentVariable(ConfigurationConstants.JWT_PRIVATE_KEY)
+					?? configuration[ConfigurationConstants.JWT_PRIVATE_KEY]
+					?? throw new Exception(ResponseConstants.ConfigurationPropertyNotFound(ConfigurationConstants.JWT_PRIVATE_KEY));
+
+				var expirationInMinutes = Environment.GetEnvironmentVariable(ConfigurationConstants.JWT_PRIVATE_KEY)
+					?? configuration[ConfigurationConstants.JWT_PRIVATE_KEY]
+					?? "10";
+
+				builder.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+				{
+					ValidateIssuer = true,
+					ValidIssuer = "http://localhost:5063"
+				};
+			});
 		}
 	}
 }

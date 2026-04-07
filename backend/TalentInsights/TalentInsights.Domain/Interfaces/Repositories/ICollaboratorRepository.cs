@@ -9,5 +9,6 @@ namespace TalentInsights.Domain.Interfaces.Repositories
 		IQueryable<Collaborator> Queryable();
 		Task<bool> IfExists(Guid collaboratorId);
 		Task<Collaborator> Update(Collaborator collaborator);
+		Task<bool> HasCreated();
 	}
 }

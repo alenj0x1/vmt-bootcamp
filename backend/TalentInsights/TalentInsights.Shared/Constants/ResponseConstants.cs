@@ -8,9 +8,14 @@ namespace TalentInsights.Shared.Constants
 		// Projects
 		public const string PROJECT_NOT_EXISTS = "El proyecto no existe";
 
-		public static string ERROR_UNEXPECTED(string traceId)
+		public static string ErrorUnexpected(string traceId)
 		{
 			return $"Ha ocurrido un error inesperado: Contacto con soporte, mencionando el siguiente código de error: {traceId}";
+		}
+
+		public static string ConfigurationPropertyNotFound(string property)
+		{
+			return $"Falta la propiedad '{property}' por establecer en la configuración del aplicativo.";
 		}
 	}
 }

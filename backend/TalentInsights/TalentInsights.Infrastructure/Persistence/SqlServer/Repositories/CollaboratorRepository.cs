@@ -37,6 +37,18 @@ namespace TalentInsights.Infrastructure.Persistence.SqlServer.Repositories
 			}
 		}
 
+		public async Task<bool> HasCreated()
+		{
+			try
+			{
+				return await context.Collaborators.AnyAsync();
+			}
+			catch
+			{
+				throw;
+			}
+		}
+
 		public async Task<bool> IfExists(Guid collaboratorId)
 		{
 			try

@@ -7,6 +7,8 @@ public partial class Collaborator
 {
     public Guid Id { get; set; }
 
+    public string Email { get; set; } = null!;
+
     public string FullName { get; set; } = null!;
 
     public string? GitlabProfile { get; set; }
@@ -20,6 +22,8 @@ public partial class Collaborator
     public bool IsActive { get; set; }
 
     public DateTime CreatedAt { get; set; }
+
+    public DateTime? DeletedAt { get; set; }
 
     public DateTime UpdatedAt { get; set; }
 

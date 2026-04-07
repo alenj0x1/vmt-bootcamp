@@ -7,6 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.14" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\TalentInsights.Domain\TalentInsights.Domain.csproj" />
     <ProjectReference Include="..\TalentInsights.Infrastructure\TalentInsights.Infrastructure.csproj" />
     <ProjectReference Include="..\TalentInsights.Shared\TalentInsights.Shared.csproj" />

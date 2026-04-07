@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Configuration;
 using TalentInsights.Application.Helpers;
 using TalentInsights.Application.Interfaces.Services;
 using TalentInsights.Application.Models.DTOs;
@@ -6,12 +7,13 @@ using TalentInsights.Application.Models.Responses;
 using TalentInsights.Domain.Database.SqlServer.Entities;
 using TalentInsights.Domain.Exceptions;
 using TalentInsights.Domain.Interfaces.Repositories;
+using TalentInsights.Shared;
 using TalentInsights.Shared.Constants;
 using TalentInsights.Shared.Helpers;
 
 namespace TalentInsights.Application.Services
 {
-	public class CollaboratorService(ICollaboratorRepository repository) : ICollaboratorService
+	public class CollaboratorService(ICollaboratorRepository repository, IConfiguration configuration) : ICollaboratorService
 	{
 		public async Task<GenericResponse<CollaboratorDto>> Create(CreateCollaboratorRequest model)
 		{
@@ -109,6 +111,32 @@ namespace TalentInsights.Application.Services
 				CreatedAt = collaborator.CreatedAt,
 				IsActive = collaborator.IsActive
 			};
+		}
+
+		public async Task CreateFirstUser()
+		{
+			var hasCreated = await repository.HasCreated();
+			if (hasCreated) return;
+
+			var fullName = configuration[ConfigurationConstants.FIRST_APP_TIME_USER_FULLNAME]
+				?? throw new Exception(ResponseConstants.ConfigurationPropertyNotFound(ConfigurationConstants.FIRST_APP_TIME_USER_FULLNAME));
+
+			var email = configuration[ConfigurationConstants.FIRST_APP_TIME_USER_EMAIL]
+				?? throw new Exception(ResponseConstants.ConfigurationPropertyNotFound(ConfigurationConstants.FIRST_APP_TIME_USER_EMAIL));
+
+			var position = configuration[ConfigurationConstants.FIRST_APP_TIME_USER_POSITION]
+				?? throw new Exception(ResponseConstants.ConfigurationPropertyNotFound(ConfigurationConstants.FIRST_APP_TIME_USER_POSITION));
+
+			var password = configuration[ConfigurationConstants.FIRST_APP_TIME_USER_PASSWORD]
+				?? throw new Exception(ResponseConstants.ConfigurationPropertyNotFound(ConfigurationConstants.FIRST_APP_TIME_USER_PASSWORD));
+
+			await repository.Create(new Collaborator
+			{
+				FullName = fullName,
+				Email = email,
+				Position = position,
+				Password = Hasher.HashPassword(password)
+			});
 		}
 	}
 }
