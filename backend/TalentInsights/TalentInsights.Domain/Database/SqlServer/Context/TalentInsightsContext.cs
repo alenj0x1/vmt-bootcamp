@@ -38,17 +38,11 @@ public partial class TalentInsightsContext : DbContext
 
     public virtual DbSet<ProjectMessage> ProjectMessages { get; set; }
 
-    public virtual DbSet<Role> Roles { get; set; }
-
     public virtual DbSet<Skill> Skills { get; set; }
 
     public virtual DbSet<Team> Teams { get; set; }
 
     public virtual DbSet<TeamMember> TeamMembers { get; set; }
-
-    public virtual DbSet<User> Users { get; set; }
-
-    public virtual DbSet<UsersRole> UsersRoles { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
@@ -64,6 +58,7 @@ public partial class TalentInsightsContext : DbContext
             entity.Property(e => e.GitlabProfile).HasMaxLength(255);
             entity.Property(e => e.IsActive).HasDefaultValue(true);
             entity.Property(e => e.JoinedAt).HasDefaultValueSql("(sysutcdatetime())");
+            entity.Property(e => e.Password).HasMaxLength(255);
             entity.Property(e => e.Position).HasMaxLength(100);
             entity.Property(e => e.UpdatedAt).HasDefaultValueSql("(sysutcdatetime())");
         });
@@ -264,16 +259,6 @@ public partial class TalentInsightsContext : DbContext
                 .HasConstraintName("FK_ProjectMessages_Project");
         });
 
-        modelBuilder.Entity<Role>(entity =>
-        {
-            entity.HasNoKey();
-
-            entity.Property(e => e.Code).HasMaxLength(10);
-            entity.Property(e => e.CreatedAt).HasDefaultValueSql("(sysutcdatetime())");
-            entity.Property(e => e.RoleId).ValueGeneratedOnAdd();
-            entity.Property(e => e.ShowName).HasMaxLength(100);
-        });
-
         modelBuilder.Entity<Skill>(entity =>
         {
             entity.HasIndex(e => e.Name, "UQ_Skills_Name").IsUnique();
@@ -314,21 +299,6 @@ public partial class TalentInsightsContext : DbContext
             entity.HasOne(d => d.Team).WithMany(p => p.TeamMembers)
                 .HasForeignKey(d => d.TeamId)
                 .HasConstraintName("FK_TeamMembers_Team");
-        });
-
-        modelBuilder.Entity<User>(entity =>
-        {
-            entity.HasNoKey();
-
-            entity.Property(e => e.CreatedAt).HasDefaultValueSql("(sysutcdatetime())");
-            entity.Property(e => e.DisplayName).HasMaxLength(100);
-            entity.Property(e => e.UserId).HasDefaultValueSql("(newid())");
-            entity.Property(e => e.Username).HasMaxLength(32);
-        });
-
-        modelBuilder.Entity<UsersRole>(entity =>
-        {
-            entity.HasKey(e => new { e.UserId, e.RoleId }).HasName("PK_UserRoles_UserId_RoleId");
         });
 
         OnModelCreatingPartial(modelBuilder);

@@ -13,6 +13,8 @@ public partial class Collaborator
 
     public string Position { get; set; } = null!;
 
+    public string Password { get; set; } = null!;
+
     public DateTime JoinedAt { get; set; }
 
     public bool IsActive { get; set; }
@@ -20,8 +22,6 @@ public partial class Collaborator
     public DateTime CreatedAt { get; set; }
 
     public DateTime UpdatedAt { get; set; }
-
-    public DateTime? DeletedAt { get; set; }
 
     public virtual ICollection<CollaboratorHistory> CollaboratorHistories { get; set; } = new List<CollaboratorHistory>();
 
