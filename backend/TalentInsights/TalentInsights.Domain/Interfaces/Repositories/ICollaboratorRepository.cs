@@ -6,6 +6,7 @@ namespace TalentInsights.Domain.Interfaces.Repositories
 	{
 		Task<Collaborator> Create(Collaborator collaborator);
 		Task<Collaborator?> Get(Guid collaboratorId);
+		Task<Collaborator?> Get(string email);
 		IQueryable<Collaborator> Queryable();
 		Task<bool> IfExists(Guid collaboratorId);
 		Task<Collaborator> Update(Collaborator collaborator);

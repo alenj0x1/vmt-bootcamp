@@ -1,11 +1,14 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TalentInsights.Application.Interfaces.Services;
 using TalentInsights.Application.Models.Requests.Collaborator;
+using TalentInsights.Shared.Constants;
 
 namespace TalentInsights.WebApi.Controllers
 {
 	[Route("api/[controller]")]
 	[ApiController]
+	[Authorize]
 	public class CollaboratorsController(ICollaboratorService collaboratorService) : ControllerBase
 	{
 		[HttpPost]
@@ -18,6 +21,7 @@ namespace TalentInsights.WebApi.Controllers
 		[HttpGet]
 		public async Task<IActionResult> GetAll([FromQuery] FilterColaboratorRequest model)
 		{
+			var collaboratorId = User.FindFirst(ClaimsConstants.COLLABORATOR_ID)?.Value;
 			var srv = collaboratorService.Get(model);
 			return Ok(srv);
 		}

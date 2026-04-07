@@ -8,6 +8,9 @@ namespace TalentInsights.Shared.Constants
 		// Projects
 		public const string PROJECT_NOT_EXISTS = "El proyecto no existe";
 
+		// Auth
+		public const string AUTH_TOKEN_NOT_FOUND = "El token no es correcto, expiró o no se argumentó";
+
 		public static string ErrorUnexpected(string traceId)
 		{
 			return $"Ha ocurrido un error inesperado: Contacto con soporte, mencionando el siguiente código de error: {traceId}";

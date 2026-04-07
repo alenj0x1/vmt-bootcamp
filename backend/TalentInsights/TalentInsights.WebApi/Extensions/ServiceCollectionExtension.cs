@@ -1,10 +1,13 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 using Serilog;
+using System.Text;
 using TalentInsights.Application.Helpers;
 using TalentInsights.Application.Interfaces.Services;
 using TalentInsights.Application.Services;
 using TalentInsights.Domain.Database.SqlServer.Context;
+using TalentInsights.Domain.Exceptions;
 using TalentInsights.Domain.Interfaces.Repositories;
 using TalentInsights.Infrastructure.Persistence.SqlServer.Repositories;
 using TalentInsights.Shared.Constants;
@@ -21,6 +24,7 @@ namespace TalentInsights.WebApi.Extensions
 		public static void AddServices(this IServiceCollection services)
 		{
 			services.AddScoped<ICollaboratorService, CollaboratorService>();
+			services.AddScoped<IAuthService, AuthService>();
 		}
 
 		/// <summary>
@@ -65,7 +69,9 @@ namespace TalentInsights.WebApi.Extensions
 
 			services.AddMiddlewares();
 
-			AddLogging(services);
+			services.AddLogging();
+
+			services.AddAuth(configuration);
 
 			await Initialize(services);
 		}
@@ -104,7 +110,7 @@ namespace TalentInsights.WebApi.Extensions
 			await collaboratorService.CreateFirstUser();
 		}
 
-		public static void AddAuth(IServiceCollection services, IConfiguration configuration)
+		public static void AddAuth(this IServiceCollection services, IConfiguration configuration)
 		{
 			services.AddAuthentication(builder =>
 			{
@@ -124,16 +130,28 @@ namespace TalentInsights.WebApi.Extensions
 					?? configuration[ConfigurationConstants.JWT_PRIVATE_KEY]
 					?? throw new Exception(ResponseConstants.ConfigurationPropertyNotFound(ConfigurationConstants.JWT_PRIVATE_KEY));
 
-				var expirationInMinutes = Environment.GetEnvironmentVariable(ConfigurationConstants.JWT_PRIVATE_KEY)
-					?? configuration[ConfigurationConstants.JWT_PRIVATE_KEY]
-					?? "10";
-
-				builder.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+				builder.TokenValidationParameters = new TokenValidationParameters
 				{
 					ValidateIssuer = true,
-					ValidIssuer = "http://localhost:5063"
+					ValidIssuer = issuer,
+					ValidateAudience = true,
+					ValidAudience = audience,
+					ValidateLifetime = true,
+					ValidateIssuerSigningKey = true,
+					IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(privateKey)),
+					ClockSkew = TimeSpan.Zero
+				};
+
+				builder.Events = new JwtBearerEvents
+				{
+					OnChallenge = async context =>
+					{
+						throw new UnauthorizedException(ResponseConstants.AUTH_TOKEN_NOT_FOUND);
+					}
 				};
 			});
+
+			services.AddAuthorization();
 		}
 	}
 }

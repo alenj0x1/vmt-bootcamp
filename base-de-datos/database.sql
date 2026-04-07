@@ -26,7 +26,7 @@ CREATE TABLE Collaborators (
     JoinedAt      DATETIME2          NOT NULL DEFAULT SYSUTCDATETIME(),
     IsActive      BIT                NOT NULL DEFAULT 1,
     CreatedAt     DATETIME2          NOT NULL DEFAULT SYSUTCDATETIME(),
-    DeletedAt     DATETIME2          NULL DEFAULT SYSUTCDATETIME(),
+    DeletedAt     DATETIME2          NULL,
     UpdatedAt     DATETIME2          NOT NULL DEFAULT SYSUTCDATETIME(),
 
     CONSTRAINT PK_Collaborators PRIMARY KEY (Id)
@@ -382,4 +382,4 @@ CREATE INDEX IX_Menus_ParentId                   ON Menus (ParentId);
 CREATE INDEX IX_Menus_SortOrder                  ON Menus (SortOrder);
 CREATE INDEX IX_MenuPermissions_PermissionId     ON MenuPermissions (PermissionId);
 
-GO
+G

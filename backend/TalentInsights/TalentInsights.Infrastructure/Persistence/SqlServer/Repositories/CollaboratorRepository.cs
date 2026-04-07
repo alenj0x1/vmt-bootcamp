@@ -37,6 +37,18 @@ namespace TalentInsights.Infrastructure.Persistence.SqlServer.Repositories
 			}
 		}
 
+		public async Task<Collaborator?> Get(string email)
+		{
+			try
+			{
+				return await context.Collaborators.FirstOrDefaultAsync(x => x.Email == email && x.DeletedAt == null);
+			}
+			catch (Exception)
+			{
+				throw;
+			}
+		}
+
 		public async Task<bool> HasCreated()
 		{
 			try
