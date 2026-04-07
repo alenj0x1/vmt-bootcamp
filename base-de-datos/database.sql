@@ -18,6 +18,7 @@ GO
 -- ============================================================
 CREATE TABLE Collaborators (
     Id            UNIQUEIDENTIFIER   NOT NULL DEFAULT NEWID(),
+	Email		  NVARCHAR(100)      NOT NULL,
     FullName      NVARCHAR(150)      NOT NULL,
     GitlabProfile NVARCHAR(255)      NULL,
     Position      NVARCHAR(100)      NOT NULL,
@@ -25,6 +26,7 @@ CREATE TABLE Collaborators (
     JoinedAt      DATETIME2          NOT NULL DEFAULT SYSUTCDATETIME(),
     IsActive      BIT                NOT NULL DEFAULT 1,
     CreatedAt     DATETIME2          NOT NULL DEFAULT SYSUTCDATETIME(),
+    DeletedAt     DATETIME2          NULL DEFAULT SYSUTCDATETIME(),
     UpdatedAt     DATETIME2          NOT NULL DEFAULT SYSUTCDATETIME(),
 
     CONSTRAINT PK_Collaborators PRIMARY KEY (Id)
