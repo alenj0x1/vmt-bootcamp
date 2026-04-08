@@ -382,4 +382,4 @@ CREATE INDEX IX_Menus_ParentId                   ON Menus (ParentId);
 CREATE INDEX IX_Menus_SortOrder                  ON Menus (SortOrder);
 CREATE INDEX IX_MenuPermissions_PermissionId     ON MenuPermissions (PermissionId);
 
-G
+GO

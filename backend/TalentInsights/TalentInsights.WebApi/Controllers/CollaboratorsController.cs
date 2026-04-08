@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TalentInsights.Application.Interfaces.Services;
 using TalentInsights.Application.Models.Requests.Collaborator;
-using TalentInsights.Shared.Constants;
 
 namespace TalentInsights.WebApi.Controllers
 {
@@ -19,9 +18,8 @@ namespace TalentInsights.WebApi.Controllers
 		}
 
 		[HttpGet]
-		public async Task<IActionResult> GetAll([FromQuery] FilterColaboratorRequest model)
+		public async Task<IActionResult> GetAll([FromQuery] FilterColaboratorRequest model, [FromHeader] string authorization)
 		{
-			var collaboratorId = User.FindFirst(ClaimsConstants.COLLABORATOR_ID)?.Value;
 			var srv = collaboratorService.Get(model);
 			return Ok(srv);
 		}
