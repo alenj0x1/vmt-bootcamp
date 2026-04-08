@@ -1,7 +1,9 @@
 {
   "profiles": {
     "http": {
-      "commandName": "Project",
+		"commandName": "Project",
+		"launchBrowser": true,
+	  "launchUrl": "scalar",
       "environmentVariables": {
 		"ASPNETCORE_ENVIRONMENT": "Development",
 		"DATABASE_CONNECTION": ""
