@@ -4,25 +4,31 @@ using TalentInsights.Application.Interfaces.Services;
 using TalentInsights.Application.Models.DTOs;
 using TalentInsights.Application.Models.Requests.Collaborator;
 using TalentInsights.Application.Models.Responses;
+using TalentInsights.Domain.Database.SqlServer;
 using TalentInsights.Domain.Database.SqlServer.Entities;
 using TalentInsights.Domain.Exceptions;
-using TalentInsights.Domain.Interfaces.Repositories;
 using TalentInsights.Shared;
 using TalentInsights.Shared.Constants;
 using TalentInsights.Shared.Helpers;
 
 namespace TalentInsights.Application.Services
 {
-	public class CollaboratorService(ICollaboratorRepository repository, IConfiguration configuration) : ICollaboratorService
+	public class CollaboratorService(IUnitOfWork uow, IConfiguration configuration, SMTP smtp) : ICollaboratorService
 	{
 		public async Task<GenericResponse<CollaboratorDto>> Create(CreateCollaboratorRequest model)
 		{
-			var create = await repository.Create(new Collaborator
+			var password = Generate.RandomText(32);
+			var create = await uow.collaboratorRepository.Create(new Collaborator
 			{
 				GitlabProfile = model.GitlabProfile,
 				FullName = model.FullName,
-				Position = model.Position
+				Position = model.Position,
+				Email = model.Email,
+				Password = password
 			});
+
+			await smtp.Send(model.Email, "Registro de usuario - TalentInsights", $"Su contraseña es: {password}");
+			await uow.SaveChangesAsync();
 
 			return ResponseHelper.Create(Map(create));
 		}
@@ -32,14 +38,16 @@ namespace TalentInsights.Application.Services
 			var collaborator = await GetCollaborator(collaboratorId);
 
 			collaborator.DeletedAt = DateTimeHelper.UtcNow();
-			await repository.Update(collaborator);
+			await uow.collaboratorRepository.Update(collaborator);
+
+			await uow.SaveChangesAsync();
 
 			return ResponseHelper.Create(true);
 		}
 
 		public GenericResponse<List<CollaboratorDto>> Get(FilterColaboratorRequest model)
 		{
-			var queryable = repository.Queryable();
+			var queryable = uow.collaboratorRepository.Queryable();
 
 			// Filtrado de nombre
 			if (!string.IsNullOrWhiteSpace(model.FullName))
@@ -85,17 +93,20 @@ namespace TalentInsights.Application.Services
 			collaborator.GitlabProfile = model.GitlabProfile ?? collaborator.GitlabProfile;
 			collaborator.Position = model.Position ?? collaborator.Position;
 			collaborator.FullName = model.FullName ?? collaborator.FullName;
+			collaborator.Email = model.Email ?? collaborator.Email;
 
 			collaborator.UpdatedAt = DateTimeHelper.UtcNow();
 
-			var update = await repository.Update(collaborator);
+			var update = await uow.collaboratorRepository.Update(collaborator);
+
+			await uow.SaveChangesAsync();
 
 			return ResponseHelper.Create(Map(update));
 		}
 
 		private async Task<Collaborator> GetCollaborator(Guid collaboratorId)
 		{
-			return await repository.Get(collaboratorId)
+			return await uow.collaboratorRepository.Get(collaboratorId)
 				?? throw new NotFoundException(ResponseConstants.COLLABORATOR_NOT_EXISTS);
 		}
 
@@ -115,7 +126,7 @@ namespace TalentInsights.Application.Services
 
 		public async Task CreateFirstUser()
 		{
-			var hasCreated = await repository.HasCreated();
+			var hasCreated = await uow.collaboratorRepository.HasCreated();
 			if (hasCreated) return;
 
 			var fullName = configuration[ConfigurationConstants.FIRST_APP_TIME_USER_FULLNAME]
@@ -130,10 +141,10 @@ namespace TalentInsights.Application.Services
 			var password = configuration[ConfigurationConstants.FIRST_APP_TIME_USER_PASSWORD]
 				?? throw new Exception(ResponseConstants.ConfigurationPropertyNotFound(ConfigurationConstants.FIRST_APP_TIME_USER_PASSWORD));
 
-			var adminRole = await repository.GetRole(RoleConstants.Admin)
+			var adminRole = await uow.collaboratorRepository.GetRole(RoleConstants.Admin)
 				?? throw new Exception(ResponseConstants.RoleNotFound(RoleConstants.Admin));
 
-			await repository.Create(new Collaborator
+			await uow.collaboratorRepository.Create(new Collaborator
 			{
 				FullName = fullName,
 				Email = email,
@@ -146,6 +157,8 @@ namespace TalentInsights.Application.Services
 					}
 				]
 			});
+
+			await uow.SaveChangesAsync();
 		}
 	}
 }

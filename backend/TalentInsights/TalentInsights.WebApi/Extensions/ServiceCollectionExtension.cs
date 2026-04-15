@@ -5,10 +5,13 @@ using Serilog;
 using TalentInsights.Application.Helpers;
 using TalentInsights.Application.Interfaces.Services;
 using TalentInsights.Application.Services;
+using TalentInsights.Domain.Database.SqlServer;
 using TalentInsights.Domain.Database.SqlServer.Context;
 using TalentInsights.Domain.Exceptions;
 using TalentInsights.Domain.Interfaces.Repositories;
+using TalentInsights.Infrastructure.Persistence.SqlServer;
 using TalentInsights.Infrastructure.Persistence.SqlServer.Repositories;
+using TalentInsights.Shared;
 using TalentInsights.Shared.Constants;
 using TalentInsights.WebApi.Middlewares;
 
@@ -33,7 +36,28 @@ namespace TalentInsights.WebApi.Extensions
 		/// <param name="services"></param>
 		public static void AddRepositories(this IServiceCollection services)
 		{
-			services.AddTransient<ICollaboratorRepository, CollaboratorRepository>();
+			services.AddScoped<IUnitOfWork, UnitOfWork>();
+			services.AddScoped<ICollaboratorRepository, CollaboratorRepository>();
+		}
+
+		public async static Task AddSMTP(this IServiceCollection services, IConfiguration configuration)
+		{
+			var host = configuration[ConfigurationConstants.SMTP_HOST]
+				?? throw new Exception(ResponseConstants.ConfigurationPropertyNotFound(ConfigurationConstants.SMTP_HOST));
+
+			var from = configuration[ConfigurationConstants.SMTP_FROM]
+				?? throw new Exception(ResponseConstants.ConfigurationPropertyNotFound(ConfigurationConstants.SMTP_FROM));
+
+			var port = Convert.ToInt32(configuration[ConfigurationConstants.SMTP_PORT] ?? "587");
+
+			var user = configuration[ConfigurationConstants.SMTP_USER]
+				?? throw new Exception(ResponseConstants.ConfigurationPropertyNotFound(ConfigurationConstants.SMTP_USER));
+
+			var password = configuration[ConfigurationConstants.SMTP_PASSWORD]
+				?? throw new Exception(ResponseConstants.ConfigurationPropertyNotFound(ConfigurationConstants.SMTP_PASSWORD));
+
+			var smtp = new SMTP(host, from, port, user, password);
+			services.AddSingleton(smtp);
 		}
 
 
@@ -43,6 +67,8 @@ namespace TalentInsights.WebApi.Extensions
 		/// <param name="services"></param>
 		public async static Task AddCore(this IServiceCollection services, IConfiguration configuration)
 		{
+			await services.AddSMTP(configuration);
+
 			services.AddControllers().ConfigureApiBehaviorOptions(options =>
 			{
 				options.InvalidModelStateResponseFactory = (errorContext) =>

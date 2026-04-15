@@ -13,10 +13,6 @@ namespace TalentInsights.Infrastructure.Persistence.SqlServer.Repositories
 			{
 				// insert
 				await context.Collaborators.AddAsync(collaborator);
-
-				// execution // commit
-				await context.SaveChangesAsync();
-
 				return collaborator;
 			}
 			catch (Exception)
@@ -108,8 +104,6 @@ namespace TalentInsights.Infrastructure.Persistence.SqlServer.Repositories
 			try
 			{
 				context.Collaborators.Update(collaborator);
-				await context.SaveChangesAsync();
-
 				return collaborator;
 			}
 			catch (Exception)

@@ -5,18 +5,18 @@ using TalentInsights.Application.Models.Helpers;
 using TalentInsights.Application.Models.Requests.Auth;
 using TalentInsights.Application.Models.Responses;
 using TalentInsights.Application.Models.Responses.Auth;
+using TalentInsights.Domain.Database.SqlServer;
 using TalentInsights.Domain.Exceptions;
-using TalentInsights.Domain.Interfaces.Repositories;
 using TalentInsights.Shared;
 using TalentInsights.Shared.Constants;
 
 namespace TalentInsights.Application.Services
 {
-	public class AuthService(ICollaboratorRepository collaboratorRepository, IConfiguration configuration, ICacheService cacheService) : IAuthService
+	public class AuthService(IUnitOfWork uow, IConfiguration configuration, ICacheService cacheService) : IAuthService
 	{
 		public async Task<GenericResponse<LoginAuthResponse>> Login(LoginAuthRequest model)
 		{
-			var collaborator = await collaboratorRepository.Get(model.Email)
+			var collaborator = await uow.collaboratorRepository.Get(model.Email)
 				?? throw new BadRequestException(ResponseConstants.AUTH_USER_OR_PASSWORD_NOT_FOUND);
 
 			var validatePassword = Hasher.ComparePassword(model.Password, collaborator.Password);
@@ -40,7 +40,7 @@ namespace TalentInsights.Application.Services
 			var findRefreshToken = cacheService.Get<RefreshToken>(CacheHelper.AuthRefreshTokenKey(model.RefreshToken))
 				?? throw new NotFoundException(ResponseConstants.AUTH_REFRESH_TOKEN_NOT_FOUND);
 
-			var collaborator = await collaboratorRepository.Get(findRefreshToken.CollaboratorId)
+			var collaborator = await uow.collaboratorRepository.Get(findRefreshToken.CollaboratorId)
 				?? throw new NotFoundException(ResponseConstants.COLLABORATOR_NOT_EXISTS);
 
 			var token = TokenHelper.Create(findRefreshToken.CollaboratorId, [.. collaborator.CollaboratorRoleCollaborators.Select(x => x.Role.Name)], configuration, cacheService);
