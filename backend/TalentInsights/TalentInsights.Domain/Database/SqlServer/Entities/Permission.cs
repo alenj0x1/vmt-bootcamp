@@ -19,7 +19,7 @@ public partial class Permission
 
     public string Specificity { get; set; } = null!;
 
-    public virtual ICollection<CollaboratorPermission> CollaboratorPermissions { get; set; } = new List<CollaboratorPermission>();
-
     public virtual ICollection<MenuPermission> MenuPermissions { get; set; } = new List<MenuPermission>();
+
+    public virtual ICollection<RolePermission> RolePermissions { get; set; } = new List<RolePermission>();
 }

@@ -11,5 +11,9 @@ namespace TalentInsights.Domain.Interfaces.Repositories
 		Task<bool> IfExists(Guid collaboratorId);
 		Task<Collaborator> Update(Collaborator collaborator);
 		Task<bool> HasCreated();
+
+		// Roles
+		Task<Role?> GetRole(string name);
+		Task<Role?> GetRole(Guid id);
 	}
 }

@@ -29,9 +29,9 @@ public partial class Collaborator
 
     public virtual ICollection<CollaboratorHistory> CollaboratorHistories { get; set; } = new List<CollaboratorHistory>();
 
-    public virtual ICollection<CollaboratorPermission> CollaboratorPermissionAssignedByNavigations { get; set; } = new List<CollaboratorPermission>();
+    public virtual ICollection<CollaboratorRole> CollaboratorRoleAssignedByNavigations { get; set; } = new List<CollaboratorRole>();
 
-    public virtual ICollection<CollaboratorPermission> CollaboratorPermissionCollaborators { get; set; } = new List<CollaboratorPermission>();
+    public virtual ICollection<CollaboratorRole> CollaboratorRoleCollaborators { get; set; } = new List<CollaboratorRole>();
 
     public virtual ICollection<CollaboratorSkill> CollaboratorSkills { get; set; } = new List<CollaboratorSkill>();
 

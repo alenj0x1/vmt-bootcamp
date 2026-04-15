@@ -130,12 +130,21 @@ namespace TalentInsights.Application.Services
 			var password = configuration[ConfigurationConstants.FIRST_APP_TIME_USER_PASSWORD]
 				?? throw new Exception(ResponseConstants.ConfigurationPropertyNotFound(ConfigurationConstants.FIRST_APP_TIME_USER_PASSWORD));
 
+			var adminRole = await repository.GetRole(RoleConstants.Admin)
+				?? throw new Exception(ResponseConstants.RoleNotFound(RoleConstants.Admin));
+
 			await repository.Create(new Collaborator
 			{
 				FullName = fullName,
 				Email = email,
 				Position = position,
-				Password = Hasher.HashPassword(password)
+				Password = Hasher.HashPassword(password),
+				CollaboratorRoleCollaborators = [
+					new CollaboratorRole
+					{
+						RoleId = adminRole.Id,
+					}
+				]
 			});
 		}
 	}

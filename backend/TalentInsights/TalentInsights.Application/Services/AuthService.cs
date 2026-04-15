@@ -25,7 +25,7 @@ namespace TalentInsights.Application.Services
 				throw new BadRequestException(ResponseConstants.AUTH_USER_OR_PASSWORD_NOT_FOUND);
 			}
 
-			var token = TokenHelper.Create(collaborator.Id, configuration, cacheService);
+			var token = TokenHelper.Create(collaborator.Id, [.. collaborator.CollaboratorRoleCollaborators.Select(x => x.Role.Name)], configuration, cacheService);
 			var refreshToken = TokenHelper.CreateRefresh(collaborator.Id, configuration, cacheService);
 
 			return ResponseHelper.Create(new LoginAuthResponse
@@ -40,7 +40,10 @@ namespace TalentInsights.Application.Services
 			var findRefreshToken = cacheService.Get<RefreshToken>(CacheHelper.AuthRefreshTokenKey(model.RefreshToken))
 				?? throw new NotFoundException(ResponseConstants.AUTH_REFRESH_TOKEN_NOT_FOUND);
 
-			var token = TokenHelper.Create(findRefreshToken.CollaboratorId, configuration, cacheService);
+			var collaborator = await collaboratorRepository.Get(findRefreshToken.CollaboratorId)
+				?? throw new NotFoundException(ResponseConstants.COLLABORATOR_NOT_EXISTS);
+
+			var token = TokenHelper.Create(findRefreshToken.CollaboratorId, [.. collaborator.CollaboratorRoleCollaborators.Select(x => x.Role.Name)], configuration, cacheService);
 			var refreshToken = TokenHelper.CreateRefresh(findRefreshToken.CollaboratorId, configuration, cacheService);
 
 			cacheService.Delete(CacheHelper.AuthRefreshTokenKey(model.RefreshToken));
