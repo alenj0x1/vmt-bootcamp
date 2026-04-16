@@ -7,6 +7,7 @@ namespace TalentInsights.Application.Models.Responses
 		public string Message { get; set; }
 		public List<string> Errors { get; set; } = [];
 		public DateTime TimeStamp { get; } = DateTimeHelper.UtcNow();
+		public int Count { get; set; } = 0;
 		public T Data { get; set; }
 	}
 }

@@ -27,5 +27,8 @@ namespace TalentInsights.Shared.Constants
 		public const string SMTP_USER = "SMTP:User";
 		public const string SMTP_PASSWORD = "SMTP:Password";
 		public const string SMTP_FROM = "SMTP:From";
+
+		// App
+		public const string VERSION = "Version";
 	}
 }

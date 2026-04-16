@@ -1,9 +1,11 @@
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using TalentInsights.Application.Helpers;
 using TalentInsights.Application.Interfaces.Services;
 using TalentInsights.Application.Models.DTOs;
 using TalentInsights.Application.Models.Requests.Collaborator;
 using TalentInsights.Application.Models.Responses;
+using TalentInsights.Application.Queries;
 using TalentInsights.Domain.Database.SqlServer;
 using TalentInsights.Domain.Database.SqlServer.Entities;
 using TalentInsights.Domain.Exceptions;
@@ -13,11 +15,22 @@ using TalentInsights.Shared.Helpers;
 
 namespace TalentInsights.Application.Services
 {
-	public class CollaboratorService(IUnitOfWork uow, IConfiguration configuration, SMTP smtp) : ICollaboratorService
+	public class CollaboratorService(IUnitOfWork uow, IConfiguration configuration, SMTP smtp, IEmailTemplateService emailTemplateService) : ICollaboratorService
 	{
 		public async Task<GenericResponse<CollaboratorDto>> Create(CreateCollaboratorRequest model)
 		{
+			if (model.RoleId == Guid.Empty)
+			{
+				throw new NotFoundException(ValidationConstants.IsEmpty("RoleId"));
+			}
+
+			if (await uow.collaboratorRepository.IfExists(model.Email))
+			{
+				throw new BadRequestException(ResponseConstants.COLLABORATOR_EMAIL_TAKED);
+			}
+
 			var password = Generate.RandomText(32);
+
 			var create = await uow.collaboratorRepository.Create(new Collaborator
 			{
 				GitlabProfile = model.GitlabProfile,
@@ -27,7 +40,11 @@ namespace TalentInsights.Application.Services
 				Password = password
 			});
 
-			await smtp.Send(model.Email, "Registro de usuario - TalentInsights", $"Su contraseña es: {password}");
+			var template = await emailTemplateService.Get(EmailTemplateNameConstants.COLLABORATOR_REGISTER, new Dictionary<string, string>
+			{
+				{ "password", password }
+			});
+			await smtp.Send(model.Email, template.Subject, template.Body);
 			await uow.SaveChangesAsync();
 
 			return ResponseHelper.Create(Map(create));
@@ -48,36 +65,17 @@ namespace TalentInsights.Application.Services
 		public GenericResponse<List<CollaboratorDto>> Get(FilterColaboratorRequest model)
 		{
 			var queryable = uow.collaboratorRepository.Queryable();
+			var collaborators = queryable
+				.Include(collaborator => collaborator.CollaboratorRoleCollaborators)
+				.ThenInclude(collaboratorRole => collaboratorRole.Role)
+				.ApplyQuery(model)
+				.AsQueryable()
+				.Skip(model.Offset)
+				.Take(model.Limit)
+				.Select(collaborator => Map(collaborator))
+				.ToList();
 
-			// Filtrado de nombre
-			if (!string.IsNullOrWhiteSpace(model.FullName))
-			{
-				queryable = queryable.Where(x => x.FullName.Contains(model.FullName ?? ""));
-			}
-
-			// Filtrado de perfil de gitlab
-			if (!string.IsNullOrWhiteSpace(model.GitlabProfile))
-			{
-				queryable = queryable.Where(x => x.GitlabProfile != null && x.GitlabProfile.Contains(model.GitlabProfile ?? ""));
-			}
-
-			// Filtrado del cargo
-			if (!string.IsNullOrWhiteSpace(model.Position))
-			{
-				queryable = queryable.Where(x => x.Position.Contains(model.Position ?? ""));
-			}
-
-			// Realizar paginación y realizar consulta
-			var collaborators = queryable.Skip(model.Offset).Take(model.Limit).ToList();
-
-			// Mapear colaboradores
-			List<CollaboratorDto> mapped = [];
-			foreach (var collaborator in collaborators)
-			{
-				mapped.Add(Map(collaborator));
-			}
-
-			return ResponseHelper.Create(mapped);
+			return ResponseHelper.Create(collaborators, count: queryable.Count());
 		}
 
 		public async Task<GenericResponse<CollaboratorDto>> Get(Guid collaboratorId)
@@ -112,6 +110,8 @@ namespace TalentInsights.Application.Services
 
 		private static CollaboratorDto Map(Collaborator collaborator)
 		{
+			var role = collaborator.CollaboratorRoleCollaborators.FirstOrDefault()?.Role;
+
 			return new CollaboratorDto
 			{
 				CollaboratorId = collaborator.Id,
@@ -120,7 +120,13 @@ namespace TalentInsights.Application.Services
 				GitlabProfile = collaborator.GitlabProfile,
 				JoinedAt = collaborator.JoinedAt,
 				CreatedAt = collaborator.CreatedAt,
-				IsActive = collaborator.IsActive
+				IsActive = collaborator.IsActive,
+				Role = role != null ? new RoleDto
+				{
+					Id = role.Id,
+					Name = role.Name,
+					Description = role.Description
+				} : null
 			};
 		}
 

@@ -4,6 +4,7 @@ using Microsoft.IdentityModel.Tokens;
 using Serilog;
 using TalentInsights.Application.Helpers;
 using TalentInsights.Application.Interfaces.Services;
+using TalentInsights.Application.Models.Services.EmailTemplates;
 using TalentInsights.Application.Services;
 using TalentInsights.Domain.Database.SqlServer;
 using TalentInsights.Domain.Database.SqlServer.Context;
@@ -28,6 +29,8 @@ namespace TalentInsights.WebApi.Extensions
 			services.AddScoped<ICollaboratorService, CollaboratorService>();
 			services.AddScoped<IAuthService, AuthService>();
 			services.AddScoped<ICacheService, CacheService>();
+			services.AddScoped<IEmailTemplateService, EmailTemplateService>();
+			services.AddScoped<IAppService, AppService>();
 		}
 
 		/// <summary>
@@ -38,6 +41,7 @@ namespace TalentInsights.WebApi.Extensions
 		{
 			services.AddScoped<IUnitOfWork, UnitOfWork>();
 			services.AddScoped<ICollaboratorRepository, CollaboratorRepository>();
+			services.AddScoped<IEmailTemplateRepository, EmailTemplateRepository>();
 		}
 
 		public async static Task AddSMTP(this IServiceCollection services, IConfiguration configuration)
@@ -131,11 +135,17 @@ namespace TalentInsights.WebApi.Extensions
 
 		public async static Task Initialize(this IServiceCollection services)
 		{
+			var templatesData = new EmailTemplateData();
+			services.AddSingleton(templatesData);
+
 			var provider = services.BuildServiceProvider();
 			var scope = provider.CreateAsyncScope();
 
 			var collaboratorService = scope.ServiceProvider.GetRequiredService<ICollaboratorService>();
 			await collaboratorService.CreateFirstUser();
+
+			var emailTemplateService = scope.ServiceProvider.GetRequiredService<IEmailTemplateService>();
+			await emailTemplateService.Init();
 		}
 
 		public static void AddAuth(this IServiceCollection services, IConfiguration configuration)

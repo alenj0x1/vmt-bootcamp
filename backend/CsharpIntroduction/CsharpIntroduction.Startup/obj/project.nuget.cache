@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "sNWmHtafcbw=",
+  "dgSpecHash": "xsWdrxwOKBI=",
   "success": true,
-  "projectFilePath": "C:\\Users\\viamatica\\source\\repos\\CsharpIntroduction\\CsharpIntroduction.Startup\\CsharpIntroduction.Startup.csproj",
+  "projectFilePath": "C:\\Users\\viamatica\\Desktop\\clases\\github\\vmt-bootcamp\\backend\\CsharpIntroduction\\CsharpIntroduction.Startup\\CsharpIntroduction.Startup.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\viamatica\\.nuget\\packages\\microsoft.visualstudio.azure.containers.tools.targets\\1.23.0\\microsoft.visualstudio.azure.containers.tools.targets.1.23.0.nupkg.sha512"
   ],

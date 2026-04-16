@@ -5,22 +5,8 @@ using TalentInsights.Domain.Interfaces.Repositories;
 
 namespace TalentInsights.Infrastructure.Persistence.SqlServer.Repositories
 {
-	public class CollaboratorRepository(TalentInsightsContext context) : ICollaboratorRepository
+	public class CollaboratorRepository(TalentInsightsContext context) : GenericRepository<Collaborator>(context), ICollaboratorRepository
 	{
-		public async Task<Collaborator> Create(Collaborator collaborator)
-		{
-			try
-			{
-				// insert
-				await context.Collaborators.AddAsync(collaborator);
-				return collaborator;
-			}
-			catch (Exception)
-			{
-				throw;
-			}
-		}
-
 		public async Task<Collaborator?> Get(Guid collaboratorId)
 		{
 			try
@@ -86,31 +72,9 @@ namespace TalentInsights.Infrastructure.Persistence.SqlServer.Repositories
 			}
 		}
 
-		public IQueryable<Collaborator> Queryable()
+		public async Task<bool> IfExists(string email)
 		{
-			try
-			{
-				return context.Collaborators.Where(x => x.DeletedAt == null).AsQueryable();
-			}
-			catch (Exception)
-			{
-
-				throw;
-			}
-		}
-
-		public async Task<Collaborator> Update(Collaborator collaborator)
-		{
-			try
-			{
-				context.Collaborators.Update(collaborator);
-				return collaborator;
-			}
-			catch (Exception)
-			{
-
-				throw;
-			}
+			return await context.Collaborators.AnyAsync(x => x.Email == email);
 		}
 	}
 }

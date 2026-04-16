@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\viamatica\\source\\repos\\CsharpIntroduction\\CsharpIntroduction.Startup\\CsharpIntroduction.Startup.csproj": {}
+    "C:\\Users\\viamatica\\Desktop\\clases\\github\\vmt-bootcamp\\backend\\CsharpIntroduction\\CsharpIntroduction.Startup\\CsharpIntroduction.Startup.csproj": {}
   },
   "projects": {
-    "C:\\Users\\viamatica\\source\\repos\\CsharpIntroduction\\CsharpIntroduction.Startup\\CsharpIntroduction.Startup.csproj": {
+    "C:\\Users\\viamatica\\Desktop\\clases\\github\\vmt-bootcamp\\backend\\CsharpIntroduction\\CsharpIntroduction.Startup\\CsharpIntroduction.Startup.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\viamatica\\source\\repos\\CsharpIntroduction\\CsharpIntroduction.Startup\\CsharpIntroduction.Startup.csproj",
+        "projectUniqueName": "C:\\Users\\viamatica\\Desktop\\clases\\github\\vmt-bootcamp\\backend\\CsharpIntroduction\\CsharpIntroduction.Startup\\CsharpIntroduction.Startup.csproj",
         "projectName": "CsharpIntroduction.Startup",
-        "projectPath": "C:\\Users\\viamatica\\source\\repos\\CsharpIntroduction\\CsharpIntroduction.Startup\\CsharpIntroduction.Startup.csproj",
+        "projectPath": "C:\\Users\\viamatica\\Desktop\\clases\\github\\vmt-bootcamp\\backend\\CsharpIntroduction\\CsharpIntroduction.Startup\\CsharpIntroduction.Startup.csproj",
         "packagesPath": "C:\\Users\\viamatica\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\viamatica\\source\\repos\\CsharpIntroduction\\CsharpIntroduction.Startup\\obj\\",
+        "outputPath": "C:\\Users\\viamatica\\Desktop\\clases\\github\\vmt-bootcamp\\backend\\CsharpIntroduction\\CsharpIntroduction.Startup\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -26,7 +26,8 @@
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-          "https://api.nuget.org/v3/index.json": {}
+          "https://api.nuget.org/v3/index.json": {},
+          "https://intecore-baget.bvg.fin.ec/v3/index.json": {}
         },
         "frameworks": {
           "net9.0": {

@@ -4,6 +4,7 @@ namespace TalentInsights.Shared.Constants
 	{
 		// Collaborators
 		public const string COLLABORATOR_NOT_EXISTS = "El colaborador no existe";
+		public const string COLLABORATOR_EMAIL_TAKED = "Ya existe un colaborador con el correo que está argumentando";
 
 		// Roles
 		public static string RoleNotFound(string name) => $"El rol {name} no existe";
