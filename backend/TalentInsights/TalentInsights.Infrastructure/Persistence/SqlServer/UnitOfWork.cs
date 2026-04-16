@@ -4,10 +4,11 @@ using TalentInsights.Domain.Interfaces.Repositories;
 
 namespace TalentInsights.Infrastructure.Persistence.SqlServer
 {
-	public class UnitOfWork(TalentInsightsContext context, ICollaboratorRepository collaboratorsRepository) : IUnitOfWork
+	public class UnitOfWork(TalentInsightsContext context, ICollaboratorRepository collaboratorsRepository, IEmailTemplateRepository emailTemplateRepository) : IUnitOfWork
 	{
 		private readonly TalentInsightsContext _context = context;
 		public ICollaboratorRepository collaboratorRepository { get; set; } = collaboratorsRepository;
+		public IEmailTemplateRepository emailTemplateRepository { get; set; } = emailTemplateRepository;
 
 		public async Task SaveChangesAsync()
 		{

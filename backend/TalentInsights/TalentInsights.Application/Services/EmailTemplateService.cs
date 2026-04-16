@@ -1,11 +1,11 @@
 using TalentInsights.Application.Interfaces.Services;
 using TalentInsights.Application.Models.DTOs;
 using TalentInsights.Application.Models.Services.EmailTemplates;
-using TalentInsights.Domain.Interfaces.Repositories;
+using TalentInsights.Domain.Database.SqlServer;
 
 namespace TalentInsights.Application.Services
 {
-	public class EmailTemplateService(EmailTemplateData data, IEmailTemplateRepository repository) : IEmailTemplateService
+	public class EmailTemplateService(EmailTemplateData data, IUnitOfWork uow) : IEmailTemplateService
 	{
 		public async Task<EmailTemplateDto> Get(string name, Dictionary<string, string> variables)
 		{
@@ -25,7 +25,7 @@ namespace TalentInsights.Application.Services
 
 		public async Task Init()
 		{
-			var templates = await repository.Get();
+			var templates = await uow.emailTemplateRepository.Get();
 			data.Data = templates;
 		}
 	}
