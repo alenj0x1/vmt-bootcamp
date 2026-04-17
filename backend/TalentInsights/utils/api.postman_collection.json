@@ -1,0 +1,338 @@
+{
+  "info": {
+    "_postman_id": "1b921bc8-7d58-484c-9603-7000c26e26d2",
+    "name": "api",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "33824111"
+  },
+  "item": [
+    {
+      "name": "collaborators",
+      "item": [
+        {
+          "name": "Crear colaborador",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "x-api-key",
+                "value": "data",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"FullName\": \"Usuario Prueba 11\",\r\n    \"Position\": \"Desarrollador\",\r\n    \"GitlabProfile\": \"https://www.google.com/usuarioprueba11\",\r\n    \"Email\": \"hapab4294611@mypethealh.com\",\r\n    \"RoleId\": \"4c7ff36f-3e70-4158-9bf8-46c56efc5e7a\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/collaborators",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "collaborators"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Actualizar colaborador",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"FullName\": \"Persona de recursos humanos\",\r\n    \"Position\": \"Talento Humano\",\r\n    \"RoleId\": \"0f0e9f17-0bd6-46f8-95b2-024ec7d72ed9\",\r\n    \"Email\": \"sogyzety@cyclelove.cc\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/collaborators/463108c6-318a-4eaa-becb-3d4bf38b2088",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "collaborators",
+                "463108c6-318a-4eaa-becb-3d4bf38b2088"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Eliminar colaborador",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/collaborators/805dd626-bad9-40ea-bb74-0cc78239d96e",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "collaborators",
+                "805dd626-bad9-40ea-bb74-0cc78239d96e"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Obtener un colaborador",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/collaborators/c712c3ef-0f3a-46d5-be84-f64944c04f91",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "collaborators",
+                "c712c3ef-0f3a-46d5-be84-f64944c04f91"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Obtener datos de usuario que inició sesión",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/collaborators/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "collaborators",
+                "me"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Obtener todos los colaboradores",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/collaborators?limit=10",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "collaborators"
+              ],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "auth",
+      "item": [
+        {
+          "name": "Iniciar sesión",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const resJson = pm.response.json();\r",
+                  "pm.environment.set(\"token\", resJson.data.token);\r",
+                  "pm.environment.set(\"refreshToken\", resJson.data.refreshToken);"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"Email\": \"changeme@gmail.com\",\r\n    \"Password\": \"changeme\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Renovar la sesión",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const resJson = pm.response.json();\r",
+                  "pm.environment.set(\"token\", resJson.data.token);\r",
+                  "pm.environment.set(\"refreshToken\", resJson.data.refreshToken);"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"RefreshToken\": \"{{refreshToken}}\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/renew",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "renew"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "app",
+      "item": [
+        {
+          "name": "Información de la aplicación",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const resJson = pm.response.json();\r",
+                  "pm.environment.set(\"token\", resJson.data.token);\r",
+                  "pm.environment.set(\"refreshToken\", resJson.data.refreshToken);"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/app/info",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "app",
+                "info"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}
