@@ -3,6 +3,7 @@ using TalentInsights.Application.Interfaces.Services;
 using TalentInsights.Application.Models.Requests.Auth;
 using TalentInsights.Application.Models.Responses;
 using TalentInsights.Application.Models.Responses.Auth;
+using TalentInsights.WebApi.Helpers;
 
 namespace TalentInsights.WebApi.Controllers
 {
@@ -16,10 +17,10 @@ namespace TalentInsights.WebApi.Controllers
 		[ProducesResponseType<GenericResponse<string>>(StatusCodes.Status400BadRequest)]
 		[ProducesResponseType<GenericResponse<LoginAuthResponse>>(StatusCodes.Status200OK)]
 		[Tags("auth", "collaborators", "jwt", "refresh_token")]
-		public async Task<IActionResult> Login([FromBody] LoginAuthRequest model)
+		public async Task<GenericResponse<LoginAuthResponse>> Login([FromBody] LoginAuthRequest model)
 		{
 			var srv = await service.Login(model);
-			return Ok(srv);
+			return ResponseStatus.Created(HttpContext, srv);
 		}
 
 		[HttpPost("renew")]
@@ -28,10 +29,10 @@ namespace TalentInsights.WebApi.Controllers
 		[ProducesResponseType<GenericResponse<string>>(StatusCodes.Status400BadRequest)]
 		[ProducesResponseType<GenericResponse<LoginAuthResponse>>(StatusCodes.Status200OK)]
 		[Tags("auth", "collaborators", "jwt", "refresh_token")]
-		public async Task<IActionResult> Renew([FromBody] RenewAuthRequest model)
+		public async Task<GenericResponse<LoginAuthResponse>> Renew([FromBody] RenewAuthRequest model)
 		{
 			var srv = await service.Renew(model);
-			return Ok(srv);
+			return ResponseStatus.Created(HttpContext, srv);
 		}
 	}
 }
