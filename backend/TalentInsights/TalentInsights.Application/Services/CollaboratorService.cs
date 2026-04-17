@@ -221,5 +221,11 @@ namespace TalentInsights.Application.Services
 
 			return roleToAssign;
 		}
+
+		public async Task<GenericResponse<CollaboratorDto>> Me(Claim claim)
+		{
+			var executor = await GetExecutor(claim.Value);
+			return ResponseHelper.Create(Map(executor));
+		}
 	}
 }

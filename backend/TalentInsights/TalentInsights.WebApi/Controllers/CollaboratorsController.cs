@@ -36,6 +36,14 @@ namespace TalentInsights.WebApi.Controllers
 			return Ok(srv);
 		}
 
+		[HttpGet("me")]
+		[Authorize]
+		public async Task<IActionResult> Me()
+		{
+			var srv = await collaboratorService.Me(UserClaim());
+			return Ok(srv);
+		}
+
 		[HttpPut("{id:guid}")]
 		[Authorize(Roles = "Admin, HR")]
 		public async Task<IActionResult> Update([FromBody] UpdateCollaboratorRequest model, Guid id)

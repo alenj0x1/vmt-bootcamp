@@ -11,6 +11,7 @@ namespace TalentInsights.Application.Interfaces.Services
 		public Task<GenericResponse<CollaboratorDto>> Update(Guid collaboratorId, UpdateCollaboratorRequest model, Claim claim);
 		public GenericResponse<List<CollaboratorDto>> Get(FilterColaboratorRequest model);
 		public Task<GenericResponse<CollaboratorDto>> Get(Guid collaboratorId);
+		public Task<GenericResponse<CollaboratorDto>> Me(Claim claim);
 		public Task<GenericResponse<bool>> Delete(Guid collaboratorId);
 		public Task CreateFirstUser();
 	}
