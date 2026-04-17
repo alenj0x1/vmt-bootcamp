@@ -42,6 +42,7 @@ namespace TalentInsights.WebApi.Extensions
 			services.AddScoped<IUnitOfWork, UnitOfWork>();
 			services.AddScoped<ICollaboratorRepository, CollaboratorRepository>();
 			services.AddScoped<IEmailTemplateRepository, EmailTemplateRepository>();
+			services.AddScoped<IRoleRepository, RoleRepository>();
 		}
 
 		public async static Task AddSMTP(this IServiceCollection services, IConfiguration configuration)

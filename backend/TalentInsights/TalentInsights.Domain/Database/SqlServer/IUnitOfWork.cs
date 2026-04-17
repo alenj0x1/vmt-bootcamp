@@ -6,6 +6,7 @@ namespace TalentInsights.Domain.Database.SqlServer
 	{
 		ICollaboratorRepository collaboratorRepository { get; set; }
 		IEmailTemplateRepository emailTemplateRepository { get; set; }
+		IRoleRepository roleRepository { get; set; }
 		Task SaveChangesAsync();
 	}
 }

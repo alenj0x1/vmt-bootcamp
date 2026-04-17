@@ -6,12 +6,8 @@ namespace TalentInsights.Domain.Interfaces.Repositories
 	{
 		Task<Collaborator?> Get(Guid collaboratorId);
 		Task<Collaborator?> Get(string email);
-		Task<bool> IfExists(Guid collaboratorId);
-		Task<bool> IfExists(string email);
 		Task<bool> HasCreated();
 
-		// Roles
-		Task<Role?> GetRole(string name);
-		Task<Role?> GetRole(Guid id);
+		Task<bool> ClearRoles(List<CollaboratorRole> roles);
 	}
 }

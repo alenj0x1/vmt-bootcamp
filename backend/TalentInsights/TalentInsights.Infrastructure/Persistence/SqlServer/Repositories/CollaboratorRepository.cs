@@ -7,6 +7,12 @@ namespace TalentInsights.Infrastructure.Persistence.SqlServer.Repositories
 {
 	public class CollaboratorRepository(TalentInsightsContext context) : GenericRepository<Collaborator>(context), ICollaboratorRepository
 	{
+		public async Task<bool> ClearRoles(List<CollaboratorRole> roles)
+		{
+			context.CollaboratorRoles.RemoveRange(roles);
+			return true;
+		}
+
 		public async Task<Collaborator?> Get(Guid collaboratorId)
 		{
 			try
@@ -57,24 +63,6 @@ namespace TalentInsights.Infrastructure.Persistence.SqlServer.Repositories
 			{
 				throw;
 			}
-		}
-
-		public async Task<bool> IfExists(Guid collaboratorId)
-		{
-			try
-			{
-				return await context.Collaborators.AnyAsync(x => x.Id == collaboratorId);
-			}
-			catch (Exception)
-			{
-
-				throw;
-			}
-		}
-
-		public async Task<bool> IfExists(string email)
-		{
-			return await context.Collaborators.AnyAsync(x => x.Email == email);
 		}
 	}
 }

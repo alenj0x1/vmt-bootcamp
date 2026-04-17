@@ -1,3 +1,5 @@
+using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 using TalentInsights.Domain.Database.SqlServer.Context;
 
 namespace TalentInsights.Infrastructure.Persistence.SqlServer.Repositories
@@ -25,6 +27,16 @@ namespace TalentInsights.Infrastructure.Persistence.SqlServer.Repositories
 		{
 			context.Set<T>().Update(entity);
 			return entity;
+		}
+
+		public async Task<bool> IfExists(Expression<Func<T, bool>> expression)
+		{
+			return await context.Set<T>().AnyAsync(expression);
+		}
+
+		public async Task<T?> Get(Expression<Func<T, bool>> expression)
+		{
+			return await context.Set<T>().FirstOrDefaultAsync(expression);
 		}
 	}
 }

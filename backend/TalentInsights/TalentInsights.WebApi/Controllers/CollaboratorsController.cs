@@ -1,7 +1,10 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 using TalentInsights.Application.Interfaces.Services;
 using TalentInsights.Application.Models.Requests.Collaborator;
+using TalentInsights.Domain.Exceptions;
+using TalentInsights.Shared.Constants;
 
 namespace TalentInsights.WebApi.Controllers
 {
@@ -13,11 +16,12 @@ namespace TalentInsights.WebApi.Controllers
 		[Authorize(Roles = "Admin, HR")]
 		public async Task<IActionResult> Create([FromBody] CreateCollaboratorRequest model)
 		{
-			var srv = await collaboratorService.Create(model);
+			var srv = await collaboratorService.Create(model, UserClaim());
 			return Ok(srv);
 		}
 
 		[HttpGet]
+		[Authorize]
 		public async Task<IActionResult> GetAll([FromQuery] FilterColaboratorRequest model, [FromHeader] string authorization)
 		{
 			var srv = collaboratorService.Get(model);
@@ -25,6 +29,7 @@ namespace TalentInsights.WebApi.Controllers
 		}
 
 		[HttpGet("{id:guid}")]
+		[Authorize]
 		public async Task<IActionResult> GetById(Guid id)
 		{
 			var srv = await collaboratorService.Get(id);
@@ -35,7 +40,7 @@ namespace TalentInsights.WebApi.Controllers
 		[Authorize(Roles = "Admin, HR")]
 		public async Task<IActionResult> Update([FromBody] UpdateCollaboratorRequest model, Guid id)
 		{
-			var srv = await collaboratorService.Update(id, model);
+			var srv = await collaboratorService.Update(id, model, UserClaim());
 			return Ok(srv);
 		}
 
@@ -45,6 +50,12 @@ namespace TalentInsights.WebApi.Controllers
 		{
 			var srv = await collaboratorService.Delete(id);
 			return Ok(srv);
+		}
+
+		private Claim UserClaim()
+		{
+			return User.FindFirst(ClaimsConstants.COLLABORATOR_ID)
+				?? throw new BadRequestException(ResponseConstants.AUTH_CLAIM_USER_NOT_FOUND);
 		}
 	}
 }

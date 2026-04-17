@@ -3,18 +3,31 @@ using TalentInsights.Application.Helpers;
 using TalentInsights.Application.Interfaces.Services;
 using TalentInsights.Application.Models.DTOs;
 using TalentInsights.Application.Models.Responses;
+using TalentInsights.Domain.Database.SqlServer;
+using TalentInsights.Domain.Database.SqlServer.Entities;
 using TalentInsights.Shared.Constants;
 
 namespace TalentInsights.Application.Services
 {
-	public class AppService(IConfiguration configuration) : IAppService
+	public class AppService(IConfiguration configuration, IUnitOfWork uow) : IAppService
 	{
 		public async Task<GenericResponse<AppInfoDto>> Info()
 		{
 			return ResponseHelper.Create(new AppInfoDto
 			{
-				Version = configuration[ConfigurationConstants.VERSION] ?? "0.0.0"
+				Version = configuration[ConfigurationConstants.VERSION] ?? "0.0.0",
+				Roles = [.. uow.roleRepository.Queryable().Where(x => x.IsActive).ToList().Select(r => MapRole(r))]
 			});
+		}
+
+		private RoleDto MapRole(Role role)
+		{
+			return new RoleDto
+			{
+				Id = role.Id,
+				Name = role.Name,
+				Description = role.Description,
+			};
 		}
 	}
 }

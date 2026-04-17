@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using System.Security.Claims;
 using TalentInsights.Application.Helpers;
 using TalentInsights.Application.Interfaces.Services;
 using TalentInsights.Application.Models.DTOs;
@@ -17,19 +18,20 @@ namespace TalentInsights.Application.Services
 {
 	public class CollaboratorService(IUnitOfWork uow, IConfiguration configuration, SMTP smtp, IEmailTemplateService emailTemplateService) : ICollaboratorService
 	{
-		public async Task<GenericResponse<CollaboratorDto>> Create(CreateCollaboratorRequest model)
+		public async Task<GenericResponse<CollaboratorDto>> Create(CreateCollaboratorRequest model, Claim claim)
 		{
+			var executor = await GetExecutor(claim.Value);
+
 			if (model.RoleId == Guid.Empty)
 			{
 				throw new NotFoundException(ValidationConstants.IsEmpty("RoleId"));
 			}
 
-			if (await uow.collaboratorRepository.IfExists(model.Email))
-			{
-				throw new BadRequestException(ResponseConstants.COLLABORATOR_EMAIL_TAKED);
-			}
+			await ValidateEmailIfExists(model.Email);
 
 			var password = Generate.RandomText(32);
+
+			var roleToAssign = await ValidateRole(executor, model.RoleId);
 
 			var create = await uow.collaboratorRepository.Create(new Collaborator
 			{
@@ -37,7 +39,13 @@ namespace TalentInsights.Application.Services
 				FullName = model.FullName,
 				Position = model.Position,
 				Email = model.Email,
-				Password = password
+				Password = Hasher.HashPassword(password),
+				CollaboratorRoleCollaborators = [
+					new CollaboratorRole {
+						RoleId = roleToAssign.Id,
+						AssignedBy = executor.Id
+					}
+				]
 			});
 
 			var template = await emailTemplateService.Get(EmailTemplateNameConstants.COLLABORATOR_REGISTER, new Dictionary<string, string>
@@ -84,14 +92,33 @@ namespace TalentInsights.Application.Services
 			return ResponseHelper.Create(Map(collaborator));
 		}
 
-		public async Task<GenericResponse<CollaboratorDto>> Update(Guid collaboratorId, UpdateCollaboratorRequest model)
+		public async Task<GenericResponse<CollaboratorDto>> Update(Guid collaboratorId, UpdateCollaboratorRequest model, Claim claim)
 		{
+			var executor = await GetExecutor(claim.Value);
 			var collaborator = await GetCollaborator(collaboratorId);
 
 			collaborator.GitlabProfile = model.GitlabProfile ?? collaborator.GitlabProfile;
 			collaborator.Position = model.Position ?? collaborator.Position;
 			collaborator.FullName = model.FullName ?? collaborator.FullName;
-			collaborator.Email = model.Email ?? collaborator.Email;
+
+			if (!string.IsNullOrWhiteSpace(model.Email) && collaborator.Email != model.Email)
+			{
+				await ValidateEmailIfExists(model.Email);
+				collaborator.Email = model.Email;
+			}
+
+			if (model.RoleId.HasValue)
+			{
+				var roleToAssign = await ValidateRole(executor, model.RoleId.Value);
+
+				await uow.collaboratorRepository.ClearRoles([.. collaborator.CollaboratorRoleCollaborators]);
+
+				collaborator.CollaboratorRoleCollaborators.Add(new CollaboratorRole
+				{
+					RoleId = roleToAssign.Id,
+					AssignedBy = executor.Id
+				});
+			}
 
 			collaborator.UpdatedAt = DateTimeHelper.UtcNow();
 
@@ -121,6 +148,7 @@ namespace TalentInsights.Application.Services
 				JoinedAt = collaborator.JoinedAt,
 				CreatedAt = collaborator.CreatedAt,
 				IsActive = collaborator.IsActive,
+				Email = collaborator.Email,
 				Role = role != null ? new RoleDto
 				{
 					Id = role.Id,
@@ -147,7 +175,7 @@ namespace TalentInsights.Application.Services
 			var password = configuration[ConfigurationConstants.FIRST_APP_TIME_USER_PASSWORD]
 				?? throw new Exception(ResponseConstants.ConfigurationPropertyNotFound(ConfigurationConstants.FIRST_APP_TIME_USER_PASSWORD));
 
-			var adminRole = await uow.collaboratorRepository.GetRole(RoleConstants.Admin)
+			var adminRole = await uow.roleRepository.Get(x => x.Name == RoleConstants.Admin)
 				?? throw new Exception(ResponseConstants.RoleNotFound(RoleConstants.Admin));
 
 			await uow.collaboratorRepository.Create(new Collaborator
@@ -165,6 +193,33 @@ namespace TalentInsights.Application.Services
 			});
 
 			await uow.SaveChangesAsync();
+		}
+		private async Task<Collaborator> GetExecutor(string value)
+		{
+			var uuid = Guid.Parse(value);
+			return await uow.collaboratorRepository.Get(uuid)
+				?? throw new NotFoundException(ResponseConstants.COLLABORATOR_NOT_EXISTS);
+		}
+
+		private async Task ValidateEmailIfExists(string email)
+		{
+			if (await uow.collaboratorRepository.IfExists(x => x.Email == email))
+			{
+				throw new BadRequestException(ResponseConstants.COLLABORATOR_EMAIL_TAKED);
+			}
+		}
+
+		private async Task<Role> ValidateRole(Collaborator executor, Guid roleId)
+		{
+			var roleToAssign = await uow.roleRepository.Get(roleId)
+				?? throw new NotFoundException(ResponseConstants.RoleNotFound(roleId));
+
+			if (executor.CollaboratorRoleCollaborators.First().Role.Name == RoleConstants.HR && roleToAssign.Name == RoleConstants.Admin)
+			{
+				throw new BadRequestException(ResponseConstants.CANNOT_ASSIGN_THE_ROLE);
+			}
+
+			return roleToAssign;
 		}
 	}
 }
