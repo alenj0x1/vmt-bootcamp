@@ -47,18 +47,27 @@ namespace TalentInsights.WebApi.Extensions
 
 		public async static Task AddSMTP(this IServiceCollection services, IConfiguration configuration)
 		{
-			var host = configuration[ConfigurationConstants.SMTP_HOST]
+			// Environment.GetEnvironmentVariable - Para producción
+			// configuration[ConfigurationConstants.SMTP_HOST] - Para desarrollo
+			var host = Environment.GetEnvironmentVariable(EnvironmentConstants.SMTP_HOST)
+				?? configuration[ConfigurationConstants.SMTP_HOST]
 				?? throw new Exception(ResponseConstants.ConfigurationPropertyNotFound(ConfigurationConstants.SMTP_HOST));
 
-			var from = configuration[ConfigurationConstants.SMTP_FROM]
+			var from = Environment.GetEnvironmentVariable(EnvironmentConstants.SMTP_FROM)
+				?? configuration[ConfigurationConstants.SMTP_FROM]
 				?? throw new Exception(ResponseConstants.ConfigurationPropertyNotFound(ConfigurationConstants.SMTP_FROM));
 
-			var port = Convert.ToInt32(configuration[ConfigurationConstants.SMTP_PORT] ?? "587");
+			var portValue = Environment.GetEnvironmentVariable(EnvironmentConstants.SMTP_HOST) ??
+				configuration[ConfigurationConstants.SMTP_PORT];
 
-			var user = configuration[ConfigurationConstants.SMTP_USER]
+			var port = Convert.ToInt32(portValue ?? "587");
+
+			var user = Environment.GetEnvironmentVariable(EnvironmentConstants.SMTP_USER)
+				?? configuration[ConfigurationConstants.SMTP_USER]
 				?? throw new Exception(ResponseConstants.ConfigurationPropertyNotFound(ConfigurationConstants.SMTP_USER));
 
-			var password = configuration[ConfigurationConstants.SMTP_PASSWORD]
+			var password = Environment.GetEnvironmentVariable(EnvironmentConstants.SMTP_PASSWORD)
+				?? configuration[ConfigurationConstants.SMTP_PASSWORD]
 				?? throw new Exception(ResponseConstants.ConfigurationPropertyNotFound(ConfigurationConstants.SMTP_PASSWORD));
 
 			var smtp = new SMTP(host, from, port, user, password);
@@ -90,7 +99,7 @@ namespace TalentInsights.WebApi.Extensions
 			// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 			services.AddOpenApi();
 
-			var databaseConnectionString = Environment.GetEnvironmentVariable(ConfigurationConstants.CONNECTION_STRING_DATABASE)
+			var databaseConnectionString = Environment.GetEnvironmentVariable(EnvironmentConstants.CONNECTION_STRING_DATABASE)
 					?? configuration[ConfigurationConstants.CONNECTION_STRING_DATABASE];
 
 			services.AddSqlServer<TalentInsightsContext>(databaseConnectionString);

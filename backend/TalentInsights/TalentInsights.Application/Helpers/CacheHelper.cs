@@ -35,5 +35,33 @@ namespace TalentInsights.Application.Helpers
 				Expiration = TimeSpan.FromDays(Convert.ToInt32(configuration[ConfigurationConstants.AUTH_REFRESH_TOKEN_EXPIRATION_IN_DAYS] ?? "15"))
 			};
 		}
+
+		public static string AuthRegisterTokenKey(string value)
+		{
+			return $"auth:register:tokens:{value}";
+		}
+
+		public static CacheKey AuthRegisterTokenCreation(string value, TimeSpan expiration)
+		{
+			return new CacheKey
+			{
+				Key = AuthRegisterTokenKey(value),
+				Expiration = expiration
+			};
+		}
+
+		public static string AuthRecoverPasswordOTPKey(string value)
+		{
+			return $"auth:recover_password:otps:{value}";
+		}
+
+		public static CacheKey AuthRecoverPasswordOTPCreation(string value, TimeSpan expiration)
+		{
+			return new CacheKey
+			{
+				Key = AuthRecoverPasswordOTPKey(value),
+				Expiration = expiration
+			};
+		}
 	}
 }

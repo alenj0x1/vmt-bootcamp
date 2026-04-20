@@ -18,20 +18,37 @@ namespace TalentInsights.Application.Services
 {
 	public class CollaboratorService(IUnitOfWork uow, IConfiguration configuration, SMTP smtp, IEmailTemplateService emailTemplateService) : ICollaboratorService
 	{
-		public async Task<GenericResponse<CollaboratorDto>> Create(CreateCollaboratorRequest model, Claim claim)
+		public async Task<GenericResponse<CollaboratorDto>> Create(CreateCollaboratorRequest model, Claim? claim)
 		{
-			var executor = await GetExecutor(claim.Value);
+			Role? roleToAssign = null;
+			Collaborator? executor = null;
 
-			if (model.RoleId == Guid.Empty)
+			// Normal use
+			if (claim is not null)
 			{
-				throw new NotFoundException(ValidationConstants.IsEmpty("RoleId"));
+				executor = await GetExecutor(claim.Value);
+
+				if (!model.RoleId.HasValue || model.RoleId.HasValue && model.RoleId.Value == Guid.Empty)
+				{
+					throw new NotFoundException(ValidationConstants.IsEmpty("RoleId"));
+				}
+
+				await ValidateEmailIfExists(model.Email);
+
+				roleToAssign = await ValidateRole(executor, model.RoleId.Value);
+			}
+			// Without authentication for register
+			else
+			{
+				roleToAssign = await uow.roleRepository.Get(x => x.Name == RoleConstants.Developer);
 			}
 
-			await ValidateEmailIfExists(model.Email);
+			if (roleToAssign is null)
+			{
+				throw new BadRequestException("Imposible obtener el rol para asignarle al usuario");
+			}
 
 			var password = Generate.RandomText(32);
-
-			var roleToAssign = await ValidateRole(executor, model.RoleId);
 
 			var create = await uow.collaboratorRepository.Create(new Collaborator
 			{
@@ -43,7 +60,7 @@ namespace TalentInsights.Application.Services
 				CollaboratorRoleCollaborators = [
 					new CollaboratorRole {
 						RoleId = roleToAssign.Id,
-						AssignedBy = executor.Id
+						AssignedBy = executor?.Id
 					}
 				]
 			});
@@ -194,7 +211,7 @@ namespace TalentInsights.Application.Services
 
 			await uow.SaveChangesAsync();
 		}
-		private async Task<Collaborator> GetExecutor(string value)
+		public async Task<Collaborator> GetExecutor(string value)
 		{
 			var uuid = Guid.Parse(value);
 			return await uow.collaboratorRepository.Get(uuid)

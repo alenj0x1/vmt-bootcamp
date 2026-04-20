@@ -30,5 +30,8 @@ namespace TalentInsights.Shared.Constants
 
 		// App
 		public const string VERSION = "Version";
+
+		// Client
+		public const string CLIENT_ORIGIN = "ClientOrigin";
 	}
 }

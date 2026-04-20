@@ -25,7 +25,6 @@ namespace TalentInsights.Application.Models.Requests.Collaborator
 		[MinLength(10, ErrorMessage = ValidationConstants.MIN_LENGTH)]
 		public string Email { get; set; } = null!;
 
-		[Required]
-		public Guid RoleId { get; set; }
+		public Guid? RoleId { get; set; }
 	}
 }

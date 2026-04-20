@@ -470,9 +470,11 @@ GO
 
 INSERT INTO EmailTemplates (Name, Subject, Body)
 VALUES
-('COLLABORATOR_REGISTER', 'Registro de usuario - Talent Insights', 'Se creo una cuenta con su correo electrónico. Su contraseña es: <strong>{{password}}</strong>'),
-('AUTH_LOGIN_SUCCESS', 'Inicio de sesión exitoso - Talent Insights', 'Se inicio sesión en su cuenta a las <strong>{{datetime}}</strong>'),
-('AUTH_LOGIN_FAILED', 'Inicio de sesión fallido - Talent Insights', 'Se intentó iniciar sesión en su cuenta, si no fue usted quién realizó esta acción, comuniquelo de inmediato a un administrador');
+('COLLABORATOR_REGISTER',              'Registro de usuario - Talent Insights',            'Se creo una cuenta con su correo electrónico. Su contraseña es: <strong>{{password}}</strong>'),
+('AUTH_LOGIN_SUCCESS',                 'Inicio de sesión exitoso - Talent Insights',       'Se inicio sesión en su cuenta a las <strong>{{datetime}}</strong>'),
+('AUTH_LOGIN_FAILED',                  'Inicio de sesión fallido - Talent Insights',       'Se intentó iniciar sesión en su cuenta, si no fue usted quién realizó esta acción, comuniquelo de inmediato a un administrador'),
+('AUTH_REGISTER_EMAIL_VERIFICATION',   'Verificación de correo - Talent Insights',         'Hola, para continuar con su proceso de registro, necesita validar su correo electrónico, haciendo clic en el siguiente <a href="{{url}}">enlace</a>.'),
+('AUTH_RECOVER_PASSWORD_OTP',          'Recuperación de contraseña - Talent Insights',	   'Hola, el siguiente código le permitirá completar el proceso de cambio de contraseña para su cuenta: <strong>{{otp}}</strong>');
 
 -- ============================================================
 --  ÍNDICES para mejorar el rendimiento de consultas frecuentes
