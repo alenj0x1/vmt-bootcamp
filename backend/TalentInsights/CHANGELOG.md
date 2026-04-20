@@ -1,13 +1,10 @@
 # Changelog
 
-## 0.0.0 - 16-04-2026
-
-El comienzo
+## 1.0.0 - 20-04-2026
 
 ### Adición
 
-### Mejora
-
-### Corrección
-
-### Eliminación
+1. Módulo de autenticación completo
+2. Módulo de gestión de colaboradores
+3. Integración para ambientes productivos con variables de entorno.
+4. Integración con servicio de terceros para SMTP y plantillas de correo.
