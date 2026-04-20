@@ -57,7 +57,7 @@ namespace TalentInsights.WebApi.Extensions
 				?? configuration[ConfigurationConstants.SMTP_FROM]
 				?? throw new Exception(ResponseConstants.ConfigurationPropertyNotFound(ConfigurationConstants.SMTP_FROM));
 
-			var portValue = Environment.GetEnvironmentVariable(EnvironmentConstants.SMTP_HOST) ??
+			var portValue = Environment.GetEnvironmentVariable(EnvironmentConstants.SMTP_PORT) ??
 				configuration[ConfigurationConstants.SMTP_PORT];
 
 			var port = Convert.ToInt32(portValue ?? "587");
