@@ -34,7 +34,7 @@ namespace TalentInsights.Infrastructure.Persistence.SqlServer.Repositories
 			return await context.Set<T>().AnyAsync(expression);
 		}
 
-		public async Task<T?> Get(Expression<Func<T, bool>> expression)
+		public async virtual Task<T?> Get(Expression<Func<T, bool>> expression)
 		{
 			return await context.Set<T>().FirstOrDefaultAsync(expression);
 		}

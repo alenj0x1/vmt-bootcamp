@@ -31,6 +31,8 @@ namespace TalentInsights.WebApi.Extensions
 			services.AddScoped<ICacheService, CacheService>();
 			services.AddScoped<IEmailTemplateService, EmailTemplateService>();
 			services.AddScoped<IAppService, AppService>();
+			services.AddScoped<IProjectService, ProjectService>();
+			services.AddScoped<ITeamService, TeamService>();
 		}
 
 		/// <summary>
@@ -43,6 +45,8 @@ namespace TalentInsights.WebApi.Extensions
 			services.AddScoped<ICollaboratorRepository, CollaboratorRepository>();
 			services.AddScoped<IEmailTemplateRepository, EmailTemplateRepository>();
 			services.AddScoped<IRoleRepository, RoleRepository>();
+			services.AddScoped<IProjectRepository, ProjectRepository>();
+			services.AddScoped<ITeamRepository, TeamRepository>();
 		}
 
 		public async static Task AddSMTP(this IServiceCollection services, IConfiguration configuration)

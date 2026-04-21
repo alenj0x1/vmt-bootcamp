@@ -1,0 +1,22 @@
+using System.ComponentModel.DataAnnotations;
+using TalentInsights.Shared.Constants;
+
+namespace TalentInsights.Application.Models.Requests.Projects
+{
+	public class FilterProjectRequest : BaseRequest
+	{
+		public Guid? Id { get; set; }
+
+		[MaxLength(200, ErrorMessage = ValidationConstants.MAX_LENGTH)]
+		[MinLength(10, ErrorMessage = ValidationConstants.MIN_LENGTH)]
+		public string? Name { get; set; } = null!;
+
+		[MaxLength(1000, ErrorMessage = ValidationConstants.MAX_LENGTH)]
+		[MinLength(10, ErrorMessage = ValidationConstants.MIN_LENGTH)]
+		public string? Description { get; set; }
+
+		[MaxLength(50, ErrorMessage = ValidationConstants.MAX_LENGTH)]
+		[MinLength(3, ErrorMessage = ValidationConstants.MIN_LENGTH)]
+		public string? Status { get; set; } = null!;
+	}
+}
