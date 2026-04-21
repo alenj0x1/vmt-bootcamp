@@ -43,6 +43,26 @@ namespace TalentInsights.Infrastructure.Persistence.SqlServer.Repositories
 			}
 		}
 
+		public async Task<List<Menu>> GetMenu(Guid collaboratorId)
+		{
+			var permissions = await context.CollaboratorRoles
+				.Where(cr => cr.CollaboratorId == collaboratorId)
+				.Join(context.RolePermissions,
+					cr => cr.RoleId,
+					rp => rp.RoleId,
+					(cr, rp) => rp.PermissionId)
+				.ToListAsync();
+
+
+			return await context.Menus
+				.Where(m => m.MenuPermissions.Any(mp => permissions.Contains(mp.PermissionId)) &&
+					m.IsVisible &&
+					m.IsActive)
+				.OrderBy(m => m.ParentId)
+				.ThenBy(m => m.SortOrder)
+				.ToListAsync();
+		}
+
 		public async Task<Role?> GetRole(string name)
 		{
 			return await context.Roles.FirstOrDefaultAsync(x => x.Name == name);

@@ -7,7 +7,7 @@ namespace TalentInsights.Domain.Interfaces.Repositories
 		Task<Collaborator?> Get(Guid collaboratorId);
 		Task<Collaborator?> Get(string email);
 		Task<bool> HasCreated();
-
 		Task<bool> ClearRoles(List<CollaboratorRole> roles);
+		Task<List<Menu>> GetMenu(Guid collaboratorId);
 	}
 }
